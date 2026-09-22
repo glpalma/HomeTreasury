@@ -34,11 +34,15 @@ sequenceDiagram
   MeController-->>Client: 204 No Content
 ```
 
+
+
+
+
 ## Today → after
 
-**Today** in [`AppUser.java`](../../src/main/java/com/glpalma/HomeTreasury/user/AppUser.java): `getPasswordHash()` is present but there is no `setPasswordHash`. The field `passwordHash` is `private` with no setter.
+**Today** in `[AppUser.java](../../src/main/java/com/glpalma/HomeTreasury/user/AppUser.java)`: `getPasswordHash()` is present but there is no `setPasswordHash`. The field `passwordHash` is `private` with no setter.
 
-**Today** [`MeController.java`](../../src/main/java/com/glpalma/HomeTreasury/user/MeController.java): created in slice 05 with only `GET /api/me`. This slice adds `PUT /api/me/password` and the two extra constructor dependencies.
+**Today** `[MeController.java](../../src/main/java/com/glpalma/HomeTreasury/user/MeController.java)`: created in slice 05 with only `GET /api/me`. This slice adds `PUT /api/me/password` and the two extra constructor dependencies.
 
 **After:** `AppUser` gains `setPasswordHash`; `MeController` gains `changePassword` with full dependency injection.
 
@@ -46,8 +50,7 @@ sequenceDiagram
 
 Files ordered: entity mutator → request DTO → controller (the controller references both).
 
-- [ ] **Edit** [`src/main/java/com/glpalma/HomeTreasury/user/AppUser.java`](../../src/main/java/com/glpalma/HomeTreasury/user/AppUser.java) — add `setPasswordHash` so `MeController` can update the password and save via JPA dirty-checking
-
+- [x] **Edit** `[src/main/java/com/glpalma/HomeTreasury/user/AppUser.java](../../src/main/java/com/glpalma/HomeTreasury/user/AppUser.java)` — add `setPasswordHash` so `MeController` can update the password and save via JPA dirty-checking
   ```java
   package com.glpalma.HomeTreasury.user;
 
@@ -93,8 +96,7 @@ Files ordered: entity mutator → request DTO → controller (the controller ref
   }
   ```
 
-- [ ] **New** [`src/main/java/com/glpalma/HomeTreasury/user/ChangePasswordRequest.java`](../../src/main/java/com/glpalma/HomeTreasury/user/ChangePasswordRequest.java) — request DTO with validation constraints; `@Size(min=8)` enforces a minimum length before the hash is computed
-
+- [x] **New** `[src/main/java/com/glpalma/HomeTreasury/user/ChangePasswordRequest.java](../../src/main/java/com/glpalma/HomeTreasury/user/ChangePasswordRequest.java)` — request DTO with validation constraints; `@Size(min=8)` enforces a minimum length before the hash is computed
   ```java
   package com.glpalma.HomeTreasury.user;
 
@@ -108,8 +110,7 @@ Files ordered: entity mutator → request DTO → controller (the controller ref
   }
   ```
 
-- [ ] **Edit** [`src/main/java/com/glpalma/HomeTreasury/user/MeController.java`](../../src/main/java/com/glpalma/HomeTreasury/user/MeController.java) — add `PUT /api/me/password`; inject `AppUserRepository` and `PasswordEncoder` which `changePassword` needs
-
+- [ ] **Edit** `[src/main/java/com/glpalma/HomeTreasury/user/MeController.java](../../src/main/java/com/glpalma/HomeTreasury/user/MeController.java)` — add `PUT /api/me/password`; inject `AppUserRepository` and `PasswordEncoder` which `changePassword` needs
   ```java
   package com.glpalma.HomeTreasury.user;
 
@@ -164,50 +165,55 @@ Files ordered: entity mutator → request DTO → controller (the controller ref
   }
   ```
 
+
+
 ## Verify
 
 1. Obtain a token: `POST /api/auth/login` with the owner's current credentials; save as `$TOKEN`.
 2. Change the password:
-   ```
+  ```
    curl -i -X PUT http://localhost:8080/api/me/password \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json" \
      -d '{"currentPassword":"your-password","newPassword":"newpassword123"}'
-   ```
+  ```
 3. Expect `204 No Content`.
 4. Verify the old password no longer works:
-   ```
+  ```
    curl -i -X POST http://localhost:8080/api/auth/login \
      -H "Content-Type: application/json" \
      -d '{"email":"owner@example.com","password":"your-password"}'
-   ```
+  ```
 5. Expect `401`.
 6. Verify the new password works:
-   ```
+  ```
    curl -i -X POST http://localhost:8080/api/auth/login \
      -H "Content-Type: application/json" \
      -d '{"email":"owner@example.com","password":"newpassword123"}'
-   ```
+  ```
 7. Expect `200` with `token`, `email`, `role`.
 8. Test too-short new password:
-   ```
+  ```
    curl -i -X PUT http://localhost:8080/api/me/password \
      -H "Authorization: Bearer $TOKEN" \
      -H "Content-Type: application/json" \
      -d '{"currentPassword":"your-password","newPassword":"short"}'
-   ```
+  ```
 9. Expect `400` with `errors` array containing `newPassword size must be between 8 and ...`.
 10. Test wrong current password:
-    ```
+  ```
     curl -i -X PUT http://localhost:8080/api/me/password \
       -H "Authorization: Bearer $TOKEN" \
       -H "Content-Type: application/json" \
       -d '{"currentPassword":"wrong","newPassword":"newpassword123"}'
-    ```
+  ```
 11. Expect `401`.
+
+
 
 ## Out of scope
 
 - Notifying the user by email after a password change.
 - Expiring or invalidating the existing JWT after the password changes — the token remains valid until it expires naturally.
 - Admin-initiated password resets (no token required) — that's a future slice.
+
