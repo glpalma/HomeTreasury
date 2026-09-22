@@ -35,8 +35,7 @@ This slice is pure infrastructure — no new HTTP request path. The visible chan
 
 Files ordered: properties files → POM → new config record → main class → security config.
 
-- [ ] **Edit** [`src/main/resources/application.properties`](../../src/main/resources/application.properties) — add CORS origin property
-
+- [x] **Edit** `[src/main/resources/application.properties](../../src/main/resources/application.properties)` — add CORS origin property
   ```properties
   spring.application.name=HomeTreasury
   pluggy.client-id=${PLUGGY_CLIENT_ID}
@@ -60,8 +59,7 @@ Files ordered: properties files → POM → new config record → main class →
   app.cors.allowed-origins=http://localhost:5173
   ```
 
-- [ ] **Edit** [`src/test/resources/application.properties`](../../src/test/resources/application.properties) — add CORS origin so the test context loads `CorsProperties` without error
-
+- [x] **Edit** `[src/test/resources/application.properties](../../src/test/resources/application.properties)` — add CORS origin so the test context loads `CorsProperties` without error
   ```properties
   spring.datasource.url=jdbc:h2:mem:testdb
   spring.datasource.driver-class-name=org.h2.Driver
@@ -83,8 +81,7 @@ Files ordered: properties files → POM → new config record → main class →
   app.cors.allowed-origins=http://localhost:5173
   ```
 
-- [ ] **Edit** [`pom.xml`](../../pom.xml) — add `spring-boot-starter-validation` immediately after `spring-boot-starter-web`
-
+- [x] **Edit** `[pom.xml](../../pom.xml)` — add `spring-boot-starter-validation` immediately after `spring-boot-starter-web`
   ```xml
   <?xml version="1.0" encoding="UTF-8"?>
   <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -200,8 +197,7 @@ Files ordered: properties files → POM → new config record → main class →
   </project>
   ```
 
-- [ ] **New** [`src/main/java/com/glpalma/HomeTreasury/config/CorsProperties.java`](../../src/main/java/com/glpalma/HomeTreasury/config/CorsProperties.java) — binds `app.cors.allowed-origins` from properties into a typed list
-
+- [x] **New** `[src/main/java/com/glpalma/HomeTreasury/config/CorsProperties.java](../../src/main/java/com/glpalma/HomeTreasury/config/CorsProperties.java)` — binds `app.cors.allowed-origins` from properties into a typed list
   ```java
   package com.glpalma.HomeTreasury.config;
 
@@ -214,8 +210,7 @@ Files ordered: properties files → POM → new config record → main class →
   }
   ```
 
-- [ ] **Edit** [`src/main/java/com/glpalma/HomeTreasury/HomeTreasuryApplication.java`](../../src/main/java/com/glpalma/HomeTreasury/HomeTreasuryApplication.java) — register `CorsProperties` in `@EnableConfigurationProperties`
-
+- [x] **Edit** `[src/main/java/com/glpalma/HomeTreasury/HomeTreasuryApplication.java](../../src/main/java/com/glpalma/HomeTreasury/HomeTreasuryApplication.java)` — register `CorsProperties` in `@EnableConfigurationProperties`
   ```java
   package com.glpalma.HomeTreasury;
 
@@ -245,8 +240,7 @@ Files ordered: properties files → POM → new config record → main class →
   }
   ```
 
-- [ ] **Edit** [`src/main/java/com/glpalma/HomeTreasury/config/SecurityConfig.java`](../../src/main/java/com/glpalma/HomeTreasury/config/SecurityConfig.java) — add `@EnableMethodSecurity`, `.cors(Customizer.withDefaults())`, `CorsConfigurationSource` bean; update `permitAll` path to `/api/auth/login`
-
+- [x] **Edit** `[src/main/java/com/glpalma/HomeTreasury/config/SecurityConfig.java](../../src/main/java/com/glpalma/HomeTreasury/config/SecurityConfig.java)` — add `@EnableMethodSecurity`, `.cors(Customizer.withDefaults())`, `CorsConfigurationSource` bean; update `permitAll` path to `/api/auth/login`
   ```java
   package com.glpalma.HomeTreasury.config;
 
@@ -313,22 +307,22 @@ Files ordered: properties files → POM → new config record → main class →
 1. Run: `./mvnw spring-boot:run` (requires a `.env` with real DB + JWT credentials, or use the test profile)
 2. Expect: application starts with no `BeanCreationException` and logs `Tomcat started on port 8080`.
 3. Send a CORS preflight (replace with real running server):
-   ```
+  ```
    curl -i -X OPTIONS http://localhost:8080/api/me \
      -H "Origin: http://localhost:5173" \
      -H "Access-Control-Request-Method: GET"
-   ```
+  ```
 4. Expect response headers include:
-   ```
+  ```
    Access-Control-Allow-Origin: http://localhost:5173
    Access-Control-Allow-Methods: GET,POST,PUT,OPTIONS
-   ```
+  ```
 5. Send the old login path (should no longer be `permitAll`):
-   ```
+  ```
    curl -i -X POST http://localhost:8080/auth/login \
      -H "Content-Type: application/json" \
      -d '{"email":"owner@example.com","password":"secret"}'
-   ```
+  ```
 6. Expect: `403` or `404` (not `200` — old path is no longer matched).
 
 ## Out of scope
