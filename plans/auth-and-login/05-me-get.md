@@ -30,12 +30,15 @@ sequenceDiagram
   MeController-->>Client: 200: MeResponse email, role, home.id, home.name
 ```
 
+
+
+
+
 ## Exact changes
 
 Files ordered: response DTO → controller.
 
-- [ ] **New** [`src/main/java/com/glpalma/HomeTreasury/user/MeResponse.java`](../../src/main/java/com/glpalma/HomeTreasury/user/MeResponse.java) — response record with a nested `HomeSummary` to decouple the response shape from the `Home` entity
-
+- [x] **New** `[src/main/java/com/glpalma/HomeTreasury/user/MeResponse.java](../../src/main/java/com/glpalma/HomeTreasury/user/MeResponse.java)` — response record with a nested `HomeSummary` to decouple the response shape from the `Home` entity
   ```java
   package com.glpalma.HomeTreasury.user;
 
@@ -46,8 +49,7 @@ Files ordered: response DTO → controller.
   }
   ```
 
-- [ ] **New** [`src/main/java/com/glpalma/HomeTreasury/user/MeController.java`](../../src/main/java/com/glpalma/HomeTreasury/user/MeController.java) — `GET /api/me` only; slice 06 will add `PUT /api/me/password` to this same class
-
+- [x] **New** `[src/main/java/com/glpalma/HomeTreasury/user/MeController.java](../../src/main/java/com/glpalma/HomeTreasury/user/MeController.java)` — `GET /api/me` only; slice 06 will add `PUT /api/me/password` to this same class
   ```java
   package com.glpalma.HomeTreasury.user;
 
@@ -78,37 +80,42 @@ Files ordered: response DTO → controller.
   }
   ```
 
+
+
 ## Verify
 
 1. Obtain a token from `POST /api/auth/login` (slice 02 must be implemented):
-   ```
+  ```
    curl -s -X POST http://localhost:8080/api/auth/login \
      -H "Content-Type: application/json" \
      -d '{"email":"owner@example.com","password":"your-password"}' \
      | jq -r .token
-   ```
+  ```
    Save the result as `$TOKEN`.
 2. Call `GET /api/me`:
-   ```
+  ```
    curl -i http://localhost:8080/api/me \
      -H "Authorization: Bearer $TOKEN"
-   ```
+  ```
 3. Expect `200` with body:
-   ```json
+  ```json
    {
      "email": "owner@example.com",
      "role": "OWNER",
      "home": { "id": 1, "name": "My Home" }
    }
-   ```
+  ```
 4. Call without a token:
-   ```
+  ```
    curl -i http://localhost:8080/api/me
-   ```
+  ```
 5. Expect `401`.
+
+
 
 ## Out of scope
 
 - Returning pluggy account data or balance in this response — that's a treasury endpoint.
 - Changing the password — that's slice 06.
 - Letting the user update their email or display name.
+

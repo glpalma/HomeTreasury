@@ -58,7 +58,7 @@ sequenceDiagram
 
 Files ordered: DTOs first (records referenced by the controller) → controller last.
 
-- [ ] **Edit** `[src/main/java/com/glpalma/HomeTreasury/auth/LoginRequest.java](../../src/main/java/com/glpalma/HomeTreasury/auth/LoginRequest.java)` — add `@NotBlank` to both fields
+- [x] **Edit** `[src/main/java/com/glpalma/HomeTreasury/auth/LoginRequest.java](../../src/main/java/com/glpalma/HomeTreasury/auth/LoginRequest.java)` — add `@NotBlank` to both fields
   ```java
   package com.glpalma.HomeTreasury.auth;
 
@@ -68,7 +68,7 @@ Files ordered: DTOs first (records referenced by the controller) → controller 
   }
   ```
 
-- [ ] **Edit** `[src/main/java/com/glpalma/HomeTreasury/auth/LoginResponse.java](../../src/main/java/com/glpalma/HomeTreasury/auth/LoginResponse.java)` — add `email` and `role` fields
+- [x] **Edit** `[src/main/java/com/glpalma/HomeTreasury/auth/LoginResponse.java](../../src/main/java/com/glpalma/HomeTreasury/auth/LoginResponse.java)` — add `email` and `role` fields
   ```java
   package com.glpalma.HomeTreasury.auth;
 
@@ -76,7 +76,7 @@ Files ordered: DTOs first (records referenced by the controller) → controller 
   }
   ```
 
-- [ ] **Edit** `[src/main/java/com/glpalma/HomeTreasury/auth/AuthController.java](../../src/main/java/com/glpalma/HomeTreasury/auth/AuthController.java)` — move to `/api/auth`, add `@Valid`, return richer `LoginResponse`
+- [x] **Edit** `[src/main/java/com/glpalma/HomeTreasury/auth/AuthController.java](../../src/main/java/com/glpalma/HomeTreasury/auth/AuthController.java)` — move to `/api/auth`, add `@Valid`, return richer `LoginResponse`
   ```java
   package com.glpalma.HomeTreasury.auth;
 

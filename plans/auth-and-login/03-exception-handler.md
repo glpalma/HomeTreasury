@@ -35,12 +35,15 @@ sequenceDiagram
   ApiExceptionHandler-->>Client: 502: ProblemDetail detail="Bank data provider unavailable"
 ```
 
+
+
+
+
 ## Exact changes
 
 Files ordered: exception class (referenced by handler) → handler.
 
-- [ ] **New** [`src/main/java/com/glpalma/HomeTreasury/treasury/AccountNotFoundException.java`](../../src/main/java/com/glpalma/HomeTreasury/treasury/AccountNotFoundException.java) — typed exception for treasury lookups that find no matching account; placed in `treasury` so throwing code and exception type are co-located
-
+- [x] **New** `[src/main/java/com/glpalma/HomeTreasury/treasury/AccountNotFoundException.java](../../src/main/java/com/glpalma/HomeTreasury/treasury/AccountNotFoundException.java)` — typed exception for treasury lookups that find no matching account; placed in `treasury` so throwing code and exception type are co-located
   ```java
   package com.glpalma.HomeTreasury.treasury;
 
@@ -52,8 +55,7 @@ Files ordered: exception class (referenced by handler) → handler.
   }
   ```
 
-- [ ] **New** [`src/main/java/com/glpalma/HomeTreasury/web/ApiExceptionHandler.java`](../../src/main/java/com/glpalma/HomeTreasury/web/ApiExceptionHandler.java) — global `@RestControllerAdvice` in a new `web` package; keeps error-mapping logic out of individual controllers
-
+- [x] **New** `[src/main/java/com/glpalma/HomeTreasury/web/ApiExceptionHandler.java](../../src/main/java/com/glpalma/HomeTreasury/web/ApiExceptionHandler.java)` — global `@RestControllerAdvice` in a new `web` package; keeps error-mapping logic out of individual controllers
   ```java
   package com.glpalma.HomeTreasury.web;
 
@@ -89,30 +91,34 @@ Files ordered: exception class (referenced by handler) → handler.
   }
   ```
 
+
+
 ## Verify
 
 1. Implement slice 02 first (so `@Valid` is present on `AuthController.login`).
 2. Send a request with a blank password:
-   ```
+  ```
    curl -i -X POST http://localhost:8080/api/auth/login \
      -H "Content-Type: application/json" \
      -d '{"email":"owner@example.com","password":""}'
-   ```
+  ```
 3. Expect `400` with body:
-   ```json
+  ```json
    {
      "status": 400,
      "detail": "Validation failed",
      "errors": ["password must not be blank"]
    }
-   ```
+  ```
 4. Confirm `ResponseStatusException` still works — send wrong credentials:
-   ```
+  ```
    curl -i -X POST http://localhost:8080/api/auth/login \
      -H "Content-Type: application/json" \
      -d '{"email":"owner@example.com","password":"wrong"}'
-   ```
+  ```
 5. Expect `401` (not intercepted by `ApiExceptionHandler` — Spring resolves `ResponseStatusException` directly).
+
+
 
 ## Out of scope
 
@@ -120,3 +126,4 @@ Files ordered: exception class (referenced by handler) → handler.
 - Handling `AccessDeniedException` — Spring Security already maps this to 403.
 - Adding `AccountNotFoundException` throwing sites — those belong to the future treasury slices.
 - A custom error body shape beyond RFC 7807 `ProblemDetail`.
+

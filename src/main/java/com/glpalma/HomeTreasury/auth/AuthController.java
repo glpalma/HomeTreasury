@@ -4,6 +4,7 @@ import com.glpalma.HomeTreasury.user.AppUser;
 import com.glpalma.HomeTreasury.user.AppUserRepository;
 import com.glpalma.HomeTreasury.user.HomeMembership;
 import com.glpalma.HomeTreasury.user.HomeMembershipRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -33,7 +34,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody LoginRequest request) {
+    public LoginResponse login(@Valid @RequestBody LoginRequest request) {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.email(), request.password())
@@ -46,6 +47,6 @@ public class AuthController {
         HomeMembership membership = memberships.findByUser(user)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials"));
         String token = jwtService.createToken(user.getEmail(), membership.getRole().name());
-        return new LoginResponse(token);
+        return new LoginResponse(token, user.getEmail(), membership.getRole().name());
     }
 }
