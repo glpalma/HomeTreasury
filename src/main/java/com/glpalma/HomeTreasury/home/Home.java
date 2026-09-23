@@ -28,6 +28,10 @@ public class Home {
         this.idealBalance = idealBalance;
     }
 
+    public Home(String name) {
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }

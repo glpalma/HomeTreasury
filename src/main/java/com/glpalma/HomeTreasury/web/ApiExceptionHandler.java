@@ -7,6 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
@@ -18,6 +19,12 @@ public class ApiExceptionHandler {
                 .map(err -> err.getField() + " " + err.getDefaultMessage())
                 .toList());
         return detail;
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    ProblemDetail statusException(ResponseStatusException ex) {
+        return ProblemDetail.forStatusAndDetail(
+                HttpStatus.resolve(ex.getStatusCode().value()), ex.getReason());
     }
 
     @ExceptionHandler(AccountNotFoundException.class)

@@ -20,17 +20,20 @@ public class AuthController {
     private final AppUserRepository users;
     private final HomeMembershipRepository memberships;
     private final JwtService jwtService;
+    private final RegistrationService registrationService;
 
     public AuthController(
             AuthenticationManager authenticationManager,
             AppUserRepository users,
             HomeMembershipRepository memberships,
-            JwtService jwtService
+            JwtService jwtService,
+            RegistrationService registrationService
     ) {
         this.authenticationManager = authenticationManager;
         this.users = users;
         this.memberships = memberships;
         this.jwtService = jwtService;
+        this.registrationService = registrationService;
     }
 
     @PostMapping("/login")
@@ -48,5 +51,11 @@ public class AuthController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials"));
         String token = jwtService.createToken(user.getEmail(), membership.getRole().name());
         return new LoginResponse(token, user.getEmail(), membership.getRole().name());
+    }
+
+    @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
+    public LoginResponse register(@Valid @RequestBody RegisterRequest request) {
+        return registrationService.register(request);
     }
 }

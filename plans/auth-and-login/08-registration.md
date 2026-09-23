@@ -67,22 +67,21 @@ sequenceDiagram
 
 **Deleted:** `OwnerInitializer.java`, `HomeInitializer.java`, `OwnerProperties.java`, `HomeProperties.java` — no longer needed; self-registration replaces both.
 
-**Removed from `application.properties`:** `home.*` and `owner.*` key groups.
+**Removed from** `application.properties`**:** `home.`* and `owner.`* key groups.
 
-**Removed from `HomeTreasuryApplication.java`:** `HomeProperties.class` and `OwnerProperties.class` from `@EnableConfigurationProperties`.
+**Removed from** `HomeTreasuryApplication.java`**:** `HomeProperties.class` and `OwnerProperties.class` from `@EnableConfigurationProperties`.
 
-**`Home.java`:** gains a single-arg constructor `Home(String name)` that leaves `idealBalance` null. Used by the create path of `RegistrationService` (the user hasn't set a target yet) and fixes an existing compilation error in the slice 07 test which called `new Home("My Home")`.
+`Home.java`**:** gains a single-arg constructor `Home(String name)` that leaves `idealBalance` null. Used by the create path of `RegistrationService` (the user hasn't set a target yet) and fixes an existing compilation error in the slice 07 test which called `new Home("My Home")`.
 
-**`SecurityConfig.java`:** `permitAll` matcher extended to cover `/api/auth/register` alongside `/api/auth/login`.
+`SecurityConfig.java`**:** `permitAll` matcher extended to cover `/api/auth/register` alongside `/api/auth/login`.
 
-**`MeControllerTest.java`:** `@BeforeEach` rewritten to call `RegistrationService.register(...)` instead of relying on `OwnerInitializer`. The `changePassword` restore step is removed because `@BeforeEach` recreates a fresh user before each test anyway.
+`MeControllerTest.java`**:** `@BeforeEach` rewritten to call `RegistrationService.register(...)` instead of relying on `OwnerInitializer`. The `changePassword` restore step is removed because `@BeforeEach` recreates a fresh user before each test anyway.
 
 ## Exact changes
 
 Files ordered: new entity and repository → existing entity fix → new DTOs → service → controller edit → security edit → main class edit → properties edits → file deletions → test update.
 
-- [ ] **New** [`src/main/java/com/glpalma/HomeTreasury/home/HomeInvite.java`](../../src/main/java/com/glpalma/HomeTreasury/home/HomeInvite.java) — entity for invite codes; placed in `home` because it belongs to a `Home` and slice 09's `HomeController` creates it
-
+- [x] **New** `[src/main/java/com/glpalma/HomeTreasury/home/HomeInvite.java](../../src/main/java/com/glpalma/HomeTreasury/home/HomeInvite.java)` — entity for invite codes; placed in `home` because it belongs to a `Home` and slice 09's `HomeController` creates it
   ```java
   package com.glpalma.HomeTreasury.home;
 
@@ -129,8 +128,7 @@ Files ordered: new entity and repository → existing entity fix → new DTOs �
   }
   ```
 
-- [ ] **New** [`src/main/java/com/glpalma/HomeTreasury/home/HomeInviteRepository.java`](../../src/main/java/com/glpalma/HomeTreasury/home/HomeInviteRepository.java) — derived query covers the join path's entire validation: code match, not already used, not yet expired
-
+- [x] **New** `[src/main/java/com/glpalma/HomeTreasury/home/HomeInviteRepository.java](../../src/main/java/com/glpalma/HomeTreasury/home/HomeInviteRepository.java)` — derived query covers the join path's entire validation: code match, not already used, not yet expired
   ```java
   package com.glpalma.HomeTreasury.home;
 
@@ -145,8 +143,7 @@ Files ordered: new entity and repository → existing entity fix → new DTOs �
   }
   ```
 
-- [ ] **Edit** [`src/main/java/com/glpalma/HomeTreasury/home/Home.java`](../../src/main/java/com/glpalma/HomeTreasury/home/Home.java) — add `Home(String name)` constructor so `RegistrationService` can create a home without an idealBalance (user hasn't set a goal yet) and so the slice 07 test compiles
-
+- [x] **Edit** `[src/main/java/com/glpalma/HomeTreasury/home/Home.java](../../src/main/java/com/glpalma/HomeTreasury/home/Home.java)` — add `Home(String name)` constructor so `RegistrationService` can create a home without an idealBalance (user hasn't set a goal yet) and so the slice 07 test compiles
   ```java
   package com.glpalma.HomeTreasury.home;
 
@@ -189,8 +186,7 @@ Files ordered: new entity and repository → existing entity fix → new DTOs �
   }
   ```
 
-- [ ] **New** [`src/main/java/com/glpalma/HomeTreasury/auth/RegisterRequest.java`](../../src/main/java/com/glpalma/HomeTreasury/auth/RegisterRequest.java) — `homeName` and `inviteCode` are both optional at the DTO level; mutual-exclusivity is enforced in `RegistrationService` so the error message can be descriptive
-
+- [x] **New** `[src/main/java/com/glpalma/HomeTreasury/auth/RegisterRequest.java](../../src/main/java/com/glpalma/HomeTreasury/auth/RegisterRequest.java)` — `homeName` and `inviteCode` are both optional at the DTO level; mutual-exclusivity is enforced in `RegistrationService` so the error message can be descriptive
   ```java
   package com.glpalma.HomeTreasury.auth;
 
@@ -207,8 +203,7 @@ Files ordered: new entity and repository → existing entity fix → new DTOs �
   }
   ```
 
-- [ ] **New** [`src/main/java/com/glpalma/HomeTreasury/auth/RegistrationService.java`](../../src/main/java/com/glpalma/HomeTreasury/auth/RegistrationService.java) — `@Transactional` so a failure on any save rolls back the entire registration; branches on `inviteCode` presence to choose create vs. join path
-
+- [x] **New** `[src/main/java/com/glpalma/HomeTreasury/auth/RegistrationService.java](../../src/main/java/com/glpalma/HomeTreasury/auth/RegistrationService.java)` — `@Transactional` so a failure on any save rolls back the entire registration; branches on `inviteCode` presence to choose create vs. join path
   ```java
   package com.glpalma.HomeTreasury.auth;
 
@@ -281,8 +276,7 @@ Files ordered: new entity and repository → existing entity fix → new DTOs �
   }
   ```
 
-- [ ] **Edit** [`src/main/java/com/glpalma/HomeTreasury/auth/AuthController.java`](../../src/main/java/com/glpalma/HomeTreasury/auth/AuthController.java) — add `POST /api/auth/register` delegating to `RegistrationService`; returns 201
-
+- [x] **Edit** `[src/main/java/com/glpalma/HomeTreasury/auth/AuthController.java](../../src/main/java/com/glpalma/HomeTreasury/auth/AuthController.java)` — add `POST /api/auth/register` delegating to `RegistrationService`; returns 201
   ```java
   package com.glpalma.HomeTreasury.auth;
 
@@ -347,17 +341,9 @@ Files ordered: new entity and repository → existing entity fix → new DTOs �
   }
   ```
 
-- [ ] **Edit** [`src/main/java/com/glpalma/HomeTreasury/config/SecurityConfig.java`](../../src/main/java/com/glpalma/HomeTreasury/config/SecurityConfig.java) — extend `permitAll` to cover `/api/auth/register` (from slice 01's file; `requestMatchers` accepts varargs)
+- [x] **Edit** `[src/main/java/com/glpalma/HomeTreasury/config/SecurityConfig.java](../../src/main/java/com/glpalma/HomeTreasury/config/SecurityConfig.java)` — extend `permitAll` to cover `/api/auth/register` (from slice 01's file; `requestMatchers` accepts varargs)
 
-  ```java
-  .authorizeHttpRequests(auth -> auth
-          .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
-          .anyRequest().authenticated()
-  )
-  ```
-
-- [ ] **Edit** [`src/main/java/com/glpalma/HomeTreasury/HomeTreasuryApplication.java`](../../src/main/java/com/glpalma/HomeTreasury/HomeTreasuryApplication.java) — remove `HomeProperties.class` and `OwnerProperties.class` from `@EnableConfigurationProperties`
-
+- [x] **Edit** `[src/main/java/com/glpalma/HomeTreasury/HomeTreasuryApplication.java](../../src/main/java/com/glpalma/HomeTreasury/HomeTreasuryApplication.java)` — remove `HomeProperties.class` and `OwnerProperties.class` from `@EnableConfigurationProperties`
   ```java
   package com.glpalma.HomeTreasury;
 
@@ -378,8 +364,7 @@ Files ordered: new entity and repository → existing entity fix → new DTOs �
   }
   ```
 
-- [ ] **Edit** [`src/main/resources/application.properties`](../../src/main/resources/application.properties) — remove `home.*` and `owner.*` key groups; `pluggy.item-id` stays until the Pluggy-per-home epic removes it
-
+- [x] **Edit** `[src/main/resources/application.properties](../../src/main/resources/application.properties)` — remove `home.`* and `owner.`* key groups; `pluggy.item-id` stays until the Pluggy-per-home epic removes it
   ```properties
   spring.application.name=HomeTreasury
   pluggy.client-id=${PLUGGY_CLIENT_ID}
@@ -398,8 +383,7 @@ Files ordered: new entity and repository → existing entity fix → new DTOs �
   app.cors.allowed-origins=http://localhost:5173
   ```
 
-- [ ] **Edit** [`src/test/resources/application.properties`](../../src/test/resources/application.properties) — remove `home.*` and `owner.*` key groups; H2 test DB boots with no seeded data
-
+- [x] **Edit** `[src/test/resources/application.properties](../../src/test/resources/application.properties)` — remove `home.`* and `owner.`* key groups; H2 test DB boots with no seeded data
   ```properties
   spring.datasource.url=jdbc:h2:mem:testdb
   spring.datasource.driver-class-name=org.h2.Driver
@@ -417,13 +401,12 @@ Files ordered: new entity and repository → existing entity fix → new DTOs �
   app.cors.allowed-origins=http://localhost:5173
   ```
 
-- [ ] **Delete** [`src/main/java/com/glpalma/HomeTreasury/home/HomeInitializer.java`](../../src/main/java/com/glpalma/HomeTreasury/home/HomeInitializer.java)
-- [ ] **Delete** [`src/main/java/com/glpalma/HomeTreasury/user/OwnerInitializer.java`](../../src/main/java/com/glpalma/HomeTreasury/user/OwnerInitializer.java)
-- [ ] **Delete** [`src/main/java/com/glpalma/HomeTreasury/config/HomeProperties.java`](../../src/main/java/com/glpalma/HomeTreasury/config/HomeProperties.java)
-- [ ] **Delete** [`src/main/java/com/glpalma/HomeTreasury/config/OwnerProperties.java`](../../src/main/java/com/glpalma/HomeTreasury/config/OwnerProperties.java)
+- [x] **Delete** `[src/main/java/com/glpalma/HomeTreasury/home/HomeInitializer.java](../../src/main/java/com/glpalma/HomeTreasury/home/HomeInitializer.java)`
+- [x] **Delete** `[src/main/java/com/glpalma/HomeTreasury/user/OwnerInitializer.java](../../src/main/java/com/glpalma/HomeTreasury/user/OwnerInitializer.java)`
+- [x] **Delete** `[src/main/java/com/glpalma/HomeTreasury/config/HomeProperties.java](../../src/main/java/com/glpalma/HomeTreasury/config/HomeProperties.java)`
+- [x] **Delete** `[src/main/java/com/glpalma/HomeTreasury/config/OwnerProperties.java](../../src/main/java/com/glpalma/HomeTreasury/config/OwnerProperties.java)`
 
-- [ ] **Edit** [`src/test/java/com/glpalma/HomeTreasury/auth/AuthControllerTest.java`](../../src/test/java/com/glpalma/HomeTreasury/auth/AuthControllerTest.java) — add `@MockitoBean RegistrationService` and four tests for the register endpoint; also fix `new Home("My Home")` → `new Home("My Home", null)` since the test creates Home directly to stub `findByUser`
-
+- [x] **Edit** `[src/test/java/com/glpalma/HomeTreasury/auth/AuthControllerTest.java](../../src/test/java/com/glpalma/HomeTreasury/auth/AuthControllerTest.java)` — add `@MockitoBean RegistrationService` and four tests for the register endpoint; also fix `new Home("My Home")` → `new Home("My Home", null)` since the test creates Home directly to stub `findByUser`
   ```java
   package com.glpalma.HomeTreasury.auth;
 
@@ -581,164 +564,43 @@ Files ordered: new entity and repository → existing entity fix → new DTOs �
   }
   ```
 
-- [ ] **Edit** [`src/test/java/com/glpalma/HomeTreasury/user/MeControllerTest.java`](../../src/test/java/com/glpalma/HomeTreasury/user/MeControllerTest.java) — replace `OwnerInitializer`-based `@BeforeEach` with direct `RegistrationService.register(...)` call; add `HomeRepository` and `HomeInviteRepository` to the deletion order in `@BeforeEach`; remove the password-restore step from `changePassword_validRequest` (the next `@BeforeEach` recreates a fresh user)
+- [x] **Edit** `[src/test/java/com/glpalma/HomeTreasury/user/MeControllerTest.java](../../src/test/java/com/glpalma/HomeTreasury/user/MeControllerTest.java)` — replace `OwnerInitializer`-based `@BeforeEach` with direct `RegistrationService.register(...)` call; add `HomeRepository` and `HomeInviteRepository` to the deletion order in `@BeforeEach`; remove the password-restore step from `changePassword_validRequest` (the next `@BeforeEach` recreates a fresh user)
 
-  ```java
-  package com.glpalma.HomeTreasury.user;
 
-  import com.fasterxml.jackson.databind.ObjectMapper;
-  import com.glpalma.HomeTreasury.auth.LoginResponse;
-  import com.glpalma.HomeTreasury.auth.RegisterRequest;
-  import com.glpalma.HomeTreasury.auth.RegistrationService;
-  import com.glpalma.HomeTreasury.home.HomeInviteRepository;
-  import com.glpalma.HomeTreasury.home.HomeRepository;
-  import com.glpalma.HomeTreasury.pluggy.PluggyClient;
-  import org.junit.jupiter.api.BeforeEach;
-  import org.junit.jupiter.api.Test;
-  import org.springframework.beans.factory.annotation.Autowired;
-  import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-  import org.springframework.boot.test.context.SpringBootTest;
-  import org.springframework.http.MediaType;
-  import org.springframework.security.crypto.password.PasswordEncoder;
-  import org.springframework.test.context.bean.override.mockito.MockitoBean;
-  import org.springframework.test.web.servlet.MockMvc;
-
-  import java.util.Map;
-
-  import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-  import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-  @SpringBootTest
-  @AutoConfigureMockMvc
-  class MeControllerTest {
-
-      @Autowired MockMvc mockMvc;
-      @Autowired ObjectMapper objectMapper;
-      @Autowired AppUserRepository users;
-      @Autowired HomeMembershipRepository memberships;
-      @Autowired HomeRepository homes;
-      @Autowired HomeInviteRepository homeInvites;
-      @Autowired RegistrationService registrationService;
-      @Autowired PasswordEncoder passwordEncoder;
-      @MockitoBean PluggyClient pluggyClient;
-
-      private String ownerToken;
-
-      @BeforeEach
-      void setUp() {
-          homeInvites.deleteAll();
-          memberships.deleteAll();
-          homes.deleteAll();
-          users.deleteAll();
-          LoginResponse response = registrationService.register(
-                  new RegisterRequest("owner@test.local", "test-password", "TestHome", null));
-          ownerToken = response.token();
-      }
-
-      @Test
-      void me_noToken_returns401() throws Exception {
-          mockMvc.perform(get("/api/me"))
-                  .andExpect(status().isUnauthorized());
-      }
-
-      @Test
-      void me_validToken_returns200WithEmailRoleHome() throws Exception {
-          mockMvc.perform(get("/api/me")
-                          .header("Authorization", "Bearer " + ownerToken))
-                  .andExpect(status().isOk())
-                  .andExpect(jsonPath("$.email").value("owner@test.local"))
-                  .andExpect(jsonPath("$.role").value("OWNER"))
-                  .andExpect(jsonPath("$.home.name").value("TestHome"));
-      }
-
-      @Test
-      void changePassword_noToken_returns401() throws Exception {
-          mockMvc.perform(put("/api/me/password")
-                          .contentType(MediaType.APPLICATION_JSON)
-                          .content(objectMapper.writeValueAsString(
-                                  Map.of("currentPassword", "test-password", "newPassword", "newpassword123"))))
-                  .andExpect(status().isUnauthorized());
-      }
-
-      @Test
-      void changePassword_wrongCurrentPassword_returns401() throws Exception {
-          mockMvc.perform(put("/api/me/password")
-                          .header("Authorization", "Bearer " + ownerToken)
-                          .contentType(MediaType.APPLICATION_JSON)
-                          .content(objectMapper.writeValueAsString(
-                                  Map.of("currentPassword", "wrong", "newPassword", "newpassword123"))))
-                  .andExpect(status().isUnauthorized());
-      }
-
-      @Test
-      void changePassword_newPasswordTooShort_returns400() throws Exception {
-          mockMvc.perform(put("/api/me/password")
-                          .header("Authorization", "Bearer " + ownerToken)
-                          .contentType(MediaType.APPLICATION_JSON)
-                          .content(objectMapper.writeValueAsString(
-                                  Map.of("currentPassword", "test-password", "newPassword", "short"))))
-                  .andExpect(status().isBadRequest())
-                  .andExpect(jsonPath("$.errors").isArray());
-      }
-
-      @Test
-      void changePassword_validRequest_returns204AndUpdatesPassword() throws Exception {
-          mockMvc.perform(put("/api/me/password")
-                          .header("Authorization", "Bearer " + ownerToken)
-                          .contentType(MediaType.APPLICATION_JSON)
-                          .content(objectMapper.writeValueAsString(
-                                  Map.of("currentPassword", "test-password", "newPassword", "newpassword123"))))
-                  .andExpect(status().isNoContent());
-
-          AppUser owner = users.findByEmail("owner@test.local").orElseThrow();
-          assert passwordEncoder.matches("newpassword123", owner.getPasswordHash());
-          // No password restore needed — @BeforeEach recreates a fresh user before each test
-      }
-
-      @Test
-      void corsPreflight_fromAllowedOrigin_returns200() throws Exception {
-          mockMvc.perform(options("/api/me")
-                          .header("Origin", "http://localhost:5173")
-                          .header("Access-Control-Request-Method", "GET"))
-                  .andExpect(status().isOk())
-                  .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:5173"));
-      }
-  }
-  ```
 
 ## Verify
 
 1. Start the application (slices 01–07 must be implemented first).
 2. Register a new user with a household:
-   ```
+  ```
    curl -i -X POST http://localhost:8080/api/auth/register \
      -H "Content-Type: application/json" \
      -d '{"email":"alice@example.com","password":"password123","homeName":"Alice Home"}'
-   ```
+  ```
 3. Expect `201 Created` with body:
-   ```json
+  ```json
    { "token": "<jwt>", "email": "alice@example.com", "role": "OWNER" }
-   ```
+  ```
 4. Register a second user with the same email:
-   ```
+  ```
    curl -i -X POST http://localhost:8080/api/auth/register \
      -H "Content-Type: application/json" \
      -d '{"email":"alice@example.com","password":"password123","homeName":"Another Home"}'
-   ```
+  ```
 5. Expect `409 Conflict`.
 6. Register with a too-short password:
-   ```
+  ```
    curl -i -X POST http://localhost:8080/api/auth/register \
      -H "Content-Type: application/json" \
      -d '{"email":"bob@example.com","password":"short","homeName":"Bob Home"}'
-   ```
+  ```
 7. Expect `400 Bad Request` with `errors` array.
 8. Register with neither `homeName` nor `inviteCode`:
-   ```
+  ```
    curl -i -X POST http://localhost:8080/api/auth/register \
      -H "Content-Type: application/json" \
      -d '{"email":"carol@example.com","password":"password123"}'
-   ```
+  ```
 9. Expect `400 Bad Request`.
 10. Run tests: `./mvnw test` → `BUILD SUCCESS`.
 
@@ -749,3 +611,4 @@ Files ordered: new entity and repository → existing entity fix → new DTOs �
 - Handling the join path's invite code generation — that's slice 09.
 - Registration tests in `MeControllerTest` for the join path (invite codes aren't created until slice 09).
 - The 409 response body not being RFC 7807 — `ResponseStatusException` is resolved by Spring directly; adding a handler mapping it to `ProblemDetail` is a future improvement.
+
