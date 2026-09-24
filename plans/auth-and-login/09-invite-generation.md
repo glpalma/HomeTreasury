@@ -30,9 +30,13 @@ sequenceDiagram
   HomeController-->>Owner: 201: InviteResponse code, expiresAt
 ```
 
+
+
+
+
 ## Today → after
 
-**Today** in [`HomeController.java`](../../src/main/java/com/glpalma/HomeTreasury/home/HomeController.java):
+**Today** in `[HomeController.java](../../src/main/java/com/glpalma/HomeTreasury/home/HomeController.java)`:
 
 - Mapped to `/home` (outside the `/api/**` prefix, so CORS headers are not sent for it).
 - `PUT /home/idealBalance` does the three-repository lookup (`findByEmail` → `findByUser` → `getHome()`) manually, duplicating what `CurrentMembershipService` provides.
@@ -45,8 +49,7 @@ sequenceDiagram
 
 Files ordered: response DTO → controller.
 
-- [ ] **New** [`src/main/java/com/glpalma/HomeTreasury/home/InviteResponse.java`](../../src/main/java/com/glpalma/HomeTreasury/home/InviteResponse.java) — response DTO returned by `POST /api/home/invites`; `expiresAt` lets the SPA show the user how long the code is valid
-
+- [x] **New** `[src/main/java/com/glpalma/HomeTreasury/home/InviteResponse.java](../../src/main/java/com/glpalma/HomeTreasury/home/InviteResponse.java)` — response DTO returned by `POST /api/home/invites`; `expiresAt` lets the SPA show the user how long the code is valid
   ```java
   package com.glpalma.HomeTreasury.home;
 
@@ -56,8 +59,7 @@ Files ordered: response DTO → controller.
   }
   ```
 
-- [ ] **Edit** [`src/main/java/com/glpalma/HomeTreasury/home/HomeController.java`](../../src/main/java/com/glpalma/HomeTreasury/home/HomeController.java) — move to `/api/home`, replace manual repo lookups with `CurrentMembershipService`, add `POST /api/home/invites`
-
+- [x] **Edit** `[src/main/java/com/glpalma/HomeTreasury/home/HomeController.java](../../src/main/java/com/glpalma/HomeTreasury/home/HomeController.java)` — move to `/api/home`, replace manual repo lookups with `CurrentMembershipService`, add `POST /api/home/invites`
   ```java
   package com.glpalma.HomeTreasury.home;
 
@@ -125,45 +127,49 @@ Files ordered: response DTO → controller.
   }
   ```
 
+
+
 ## Verify
 
 1. Register an OWNER (slice 08 must be implemented): save the returned `token` as `$OWNER_TOKEN`.
 2. Generate an invite:
-   ```
+  ```
    curl -i -X POST http://localhost:8080/api/home/invites \
      -H "Authorization: Bearer $OWNER_TOKEN"
-   ```
+  ```
 3. Expect `201 Created` with body:
-   ```json
+  ```json
    { "code": "XK94TZ", "expiresAt": "2026-09-22T21:50:00Z" }
-   ```
+  ```
    Save the `code` as `$CODE`.
 4. Register a second user using the code:
-   ```
+  ```
    curl -i -X POST http://localhost:8080/api/auth/register \
      -H "Content-Type: application/json" \
      -d '{"email":"viewer@example.com","password":"password123","inviteCode":"'"$CODE"'"}'
-   ```
+  ```
 5. Expect `201 Created` with `"role": "VIEWER"`.
 6. Reuse the same code immediately:
-   ```
+  ```
    curl -i -X POST http://localhost:8080/api/auth/register \
      -H "Content-Type: application/json" \
      -d '{"email":"another@example.com","password":"password123","inviteCode":"'"$CODE"'"}'
-   ```
+  ```
 7. Expect `400 Bad Request` (code is marked used after first join).
 8. Attempt invite generation as a VIEWER: use `$VIEWER_TOKEN` from step 5.
-   ```
+  ```
    curl -i -X POST http://localhost:8080/api/home/invites \
      -H "Authorization: Bearer $VIEWER_TOKEN"
-   ```
+  ```
 9. Expect `403 Forbidden`.
 10. Confirm the old path no longer works:
-    ```
+  ```
     curl -i -X POST http://localhost:8080/home/invites \
       -H "Authorization: Bearer $OWNER_TOKEN"
-    ```
+  ```
 11. Expect `404 Not Found`.
+
+
 
 ## Out of scope
 
@@ -171,3 +177,4 @@ Files ordered: response DTO → controller.
 - Configurable expiry duration — 24 hours is hardcoded; changing it requires a code edit.
 - Code collision handling — if two codes collide (probability ≈ 10⁻⁹ per generation), the `save` throws a `DataIntegrityViolationException`. Retrying on collision is a future improvement.
 - Testing `HomeController` in an integration test — it is exercised end-to-end through the verify steps above; a dedicated `HomeControllerTest` is a future addition.
+
