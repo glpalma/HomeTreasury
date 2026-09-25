@@ -57,13 +57,22 @@ public class TreasuryService {
         BigDecimal opening = current.subtract(netChange).abs().max(EPSILON);
         BigDecimal rate = netChange.divide(opening, 4, RoundingMode.HALF_UP);
 
+        List<DashboardResponse.AccountSummary> accountSummaries = accounts.stream()
+                .map(a -> new DashboardResponse.AccountSummary(
+                        a.id(), a.name(), a.type(),
+                        a.balance() == null ? BigDecimal.ZERO : a.balance(),
+                        a.currencyCode()
+                ))
+                .toList();
+
         return new DashboardResponse(
                 current,
                 ideal,
                 delta,
                 status,
                 new DashboardResponse.Growth(periodDays, netChange, rate),
-                new DashboardResponse.Alarm(status == HealthStatus.BELOW)
+                new DashboardResponse.Alarm(status == HealthStatus.BELOW),
+                accountSummaries
         );
     }
 
