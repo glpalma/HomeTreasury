@@ -26,10 +26,20 @@ public record DashboardResponse(
     /**
      * One account backing this Home's Pluggy connection. {@code type} is Pluggy's {@code BANK}
      * or {@code CREDIT}. Only {@code BANK} accounts' balances are summed into
-     * {@code currentBalance} — a {@code CREDIT} account's {@code balance} is the amount owed on
-     * its open invoice (a liability), not spendable cash, so it is listed here for visibility but
-     * excluded from the aggregate.
+     * {@code currentBalance} — a {@code CREDIT} account's raw {@code balance} can reflect the
+     * card's total used limit (including future installment portions) rather than one invoice,
+     * so it is excluded from every aggregate.
+     * <p>
+     * For {@code CREDIT} accounts, {@code billDue}/{@code billDueDate} are resolved from Pluggy's
+     * {@code GET /bills} (the invoice with the closest upcoming due date) and are what
+     * {@code creditCardDue} is actually summed from — {@code balance} is kept here only so the
+     * two can be compared while this resolution logic is verified against real data. Both are
+     * {@code null} for {@code BANK} accounts, and {@code billDue} falls back to {@code balance}
+     * when the institution doesn't support the Bills product (see {@code PluggyClient.getBills}).
      */
-    public record AccountSummary(String id, String name, String type, BigDecimal balance, String currencyCode) {
+    public record AccountSummary(
+            String id, String name, String type, BigDecimal balance, String currencyCode,
+            BigDecimal billDue, String billDueDate
+    ) {
     }
 }

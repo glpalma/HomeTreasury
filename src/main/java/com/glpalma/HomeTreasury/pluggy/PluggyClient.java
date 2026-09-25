@@ -76,6 +76,19 @@ public class PluggyClient {
                 .body(PluggyAccountsResponse.class);
     }
 
+    /**
+     * Credit card invoices for a {@code CREDIT}-type account. Only returned by institutions that
+     * support this product (mandatory on Open Finance "Regulado" connections; on "Direct"
+     * connections only Inter PF and Itaú Cartões return it) — callers must handle an empty
+     * {@code results} list or a non-2xx response gracefully rather than assuming this always
+     * returns data.
+     */
+    public PluggyBillsResponse getBills(String accountId) {
+        return authorizedGet("/bills?accountId=" + accountId)
+                .retrieve()
+                .body(PluggyBillsResponse.class);
+    }
+
     public PluggyTransactionsResponse getTransactions(String accountId, LocalDate from, LocalDate to) {
         return restClient.get()
                 .uri(uriBuilder -> {

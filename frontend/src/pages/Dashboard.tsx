@@ -154,15 +154,22 @@ export function Dashboard() {
                 Credit cards ({creditCards.length})
               </h2>
               <p className="mb-3 text-xs text-slate-400">
-                Amount due on the current invoice — a liability, not spendable cash, so it is not
+                Amount due on the next invoice — a liability, not spendable cash, so it is not
                 included in the balance above.
               </p>
               <ul className="divide-y divide-slate-100">
                 {creditCards.map((account) => (
-                  <li key={account.id} className="flex items-center justify-between py-2 text-sm">
-                    <p className="font-medium text-slate-800">{account.name}</p>
-                    <p className="font-medium text-amber-700">
-                      {formatCurrency(account.balance, account.currencyCode)} due
+                  <li key={account.id} className="py-2 text-sm">
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium text-slate-800">{account.name}</p>
+                      <p className="font-medium text-amber-700">
+                        {formatCurrency(account.billDue ?? account.balance, account.currencyCode)} due
+                        {account.billDueDate && ` (${formatDate(account.billDueDate)})`}
+                      </p>
+                    </div>
+                    <p className="mt-1 text-xs text-slate-400">
+                      Raw account balance (used limit, may include future installments):{" "}
+                      {formatCurrency(account.balance, account.currencyCode)}
                     </p>
                   </li>
                 ))}
