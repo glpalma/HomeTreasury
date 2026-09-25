@@ -6,6 +6,7 @@ import org.springframework.web.client.RestClient;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Map;
 
 @Component
@@ -69,14 +70,25 @@ public class PluggyClient {
                 .body(PluggyItemDetails.class);
     }
 
-    public PluggyAccountsResponse getAccounts() {
-        return authorizedGet("/accounts?itemId=" + properties.itemId())
+    public PluggyAccountsResponse getAccounts(String itemId) {
+        return authorizedGet("/accounts?itemId=" + itemId)
                 .retrieve()
                 .body(PluggyAccountsResponse.class);
     }
 
-    public PluggyTransactionsResponse getTransactions(String accountId) {
-        return authorizedGet("/v2/transactions?accountId=" + accountId)
+    public PluggyTransactionsResponse getTransactions(String accountId, LocalDate from, LocalDate to) {
+        return restClient.get()
+                .uri(uriBuilder -> {
+                    uriBuilder.path("/v2/transactions").queryParam("accountId", accountId);
+                    if (from != null) {
+                        uriBuilder.queryParam("from", from.toString());
+                    }
+                    if (to != null) {
+                        uriBuilder.queryParam("to", to.toString());
+                    }
+                    return uriBuilder.build();
+                })
+                .header("X-API-KEY", getApiKey())
                 .retrieve()
                 .body(PluggyTransactionsResponse.class);
     }

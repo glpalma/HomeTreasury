@@ -1,43 +1,30 @@
 package com.glpalma.HomeTreasury.treasury;
 
-import com.glpalma.HomeTreasury.pluggy.PluggyAccountsResponse;
-import com.glpalma.HomeTreasury.pluggy.PluggyClient;
-import com.glpalma.HomeTreasury.pluggy.PluggyTransactionsResponse;
+import com.glpalma.HomeTreasury.user.CurrentMembershipService;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-
 @RestController
+@RequestMapping("/api/treasury")
 public class TreasuryController {
-    private final PluggyClient pluggyClient;
 
-    public TreasuryController(PluggyClient pluggyClient) {
-        this.pluggyClient = pluggyClient;
+    private final TreasuryService treasuryService;
+    private final CurrentMembershipService memberships;
+
+    public TreasuryController(TreasuryService treasuryService, CurrentMembershipService memberships) {
+        this.treasuryService = treasuryService;
+        this.memberships = memberships;
     }
 
-    @GetMapping("/ping-pluggy")
-    public Map<String, String> pingPluggy() {
-        String apiKey = pluggyClient.getApiKey();
-        return Map.of("status", "ok", "apiKeyPrefix", apiKey.substring(0, 8) + "...");
-    }
-
-    @GetMapping("/saldo")
-    public PluggyAccountsResponse saldo() {
-        return pluggyClient.getAccounts();
-    }
-
-    @GetMapping("/extrato")
-    public PluggyTransactionsResponse extrato(
-            @RequestParam(required = false) String accountId) {
-        if (accountId == null || accountId.isBlank()) {
-            var accounts = pluggyClient.getAccounts().results();
-            if (accounts == null || accounts.isEmpty()) {
-                throw new IllegalStateException("Nenhuma conta encontrada no item");
-            }
-            accountId = accounts.getFirst().id();
-        }
-        return pluggyClient.getTransactions(accountId);
+    @GetMapping("/dashboard")
+    public DashboardResponse dashboard(
+            @RequestParam(defaultValue = "30") int periodDays,
+            Authentication authentication
+    ) {
+        var home = memberships.require(authentication).home();
+        return treasuryService.dashboard(home, periodDays);
     }
 }
