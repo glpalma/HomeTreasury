@@ -1,16 +1,21 @@
 package com.glpalma.HomeTreasury.web;
 
 import com.glpalma.HomeTreasury.treasury.AccountNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     ProblemDetail validation(MethodArgumentNotValidException ex) {
@@ -34,6 +39,12 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(RestClientException.class)
     ProblemDetail pluggyDown(RestClientException ex) {
+        if (ex instanceof RestClientResponseException responseEx) {
+            log.error("Pluggy API call failed: status={} body={}",
+                    responseEx.getStatusCode(), responseEx.getResponseBodyAsString(), ex);
+        } else {
+            log.error("Pluggy API call failed", ex);
+        }
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_GATEWAY, "Bank data provider unavailable");
     }
 }
