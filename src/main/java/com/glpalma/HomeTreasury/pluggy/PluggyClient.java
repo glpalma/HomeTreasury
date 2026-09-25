@@ -81,10 +81,10 @@ public class PluggyClient {
                 .uri(uriBuilder -> {
                     uriBuilder.path("/v2/transactions").queryParam("accountId", accountId);
                     if (from != null) {
-                        uriBuilder.queryParam("from", from.toString());
+                        uriBuilder.queryParam("dateFrom", from.toString());
                     }
                     if (to != null) {
-                        uriBuilder.queryParam("to", to.toString());
+                        uriBuilder.queryParam("dateTo", to.toString());
                     }
                     return uriBuilder.build();
                 })
