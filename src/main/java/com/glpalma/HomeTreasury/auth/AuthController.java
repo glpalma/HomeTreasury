@@ -21,19 +21,22 @@ public class AuthController {
     private final HomeMembershipRepository memberships;
     private final JwtService jwtService;
     private final RegistrationService registrationService;
+    private final PasswordResetService passwordResetService;
 
     public AuthController(
             AuthenticationManager authenticationManager,
             AppUserRepository users,
             HomeMembershipRepository memberships,
             JwtService jwtService,
-            RegistrationService registrationService
+            RegistrationService registrationService,
+            PasswordResetService passwordResetService
     ) {
         this.authenticationManager = authenticationManager;
         this.users = users;
         this.memberships = memberships;
         this.jwtService = jwtService;
         this.registrationService = registrationService;
+        this.passwordResetService = passwordResetService;
     }
 
     @PostMapping("/login")
@@ -57,5 +60,17 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public LoginResponse register(@Valid @RequestBody RegisterRequest request) {
         return registrationService.register(request);
+    }
+
+    @PostMapping("/forgot-password")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        passwordResetService.requestReset(request.email());
+    }
+
+    @PostMapping("/reset-password")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        passwordResetService.resetPassword(request.token(), request.newPassword());
     }
 }
