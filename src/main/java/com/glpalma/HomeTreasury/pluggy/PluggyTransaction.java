@@ -8,6 +8,9 @@ public record PluggyTransaction(
         BigDecimal amount,
         String date,
         String type,
-        String category
+        String category,
+        String status,
+        String operationType,
+        PluggyPaymentData paymentData
 ) {
 }

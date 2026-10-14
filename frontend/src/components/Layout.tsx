@@ -1,4 +1,5 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { OverdueBillsBanner } from "./bills/OverdueBillsBanner";
 import { useAuth } from "../context/AuthContext";
 import { useMe } from "../hooks/useMe";
 
@@ -25,6 +26,12 @@ export function Layout() {
               <NavLink to="/dashboard" className={navLinkClass}>
                 Dashboard
               </NavLink>
+              <NavLink to="/bills" className={navLinkClass}>
+                Bills
+              </NavLink>
+              <NavLink to="/transactions" className={navLinkClass}>
+                Transactions
+              </NavLink>
               <NavLink to="/settings" className={navLinkClass}>
                 Settings
               </NavLink>
@@ -46,6 +53,7 @@ export function Layout() {
           </div>
         </div>
       </header>
+      <OverdueBillsBanner />
       <main>
         <Outlet />
       </main>

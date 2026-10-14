@@ -7,15 +7,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.YearMonth;
+
 @RestController
 @RequestMapping("/api/treasury")
 public class TreasuryController {
 
     private final TreasuryService treasuryService;
+    private final BankTransactionsService bankTransactions;
     private final CurrentMembershipService memberships;
 
-    public TreasuryController(TreasuryService treasuryService, CurrentMembershipService memberships) {
+    public TreasuryController(
+            TreasuryService treasuryService,
+            BankTransactionsService bankTransactions,
+            CurrentMembershipService memberships
+    ) {
         this.treasuryService = treasuryService;
+        this.bankTransactions = bankTransactions;
         this.memberships = memberships;
     }
 
@@ -26,5 +34,15 @@ public class TreasuryController {
     ) {
         var home = memberships.require(authentication).home();
         return treasuryService.dashboard(home, periodDays);
+    }
+
+    @GetMapping("/transactions")
+    public TransactionsResponse transactions(
+            @RequestParam YearMonth month,
+            Authentication authentication
+    ) {
+        var home = memberships.require(authentication).home();
+        var result = bankTransactions.forMonth(home, month);
+        return new TransactionsResponse(month, result.truncated(), result.transactions());
     }
 }
