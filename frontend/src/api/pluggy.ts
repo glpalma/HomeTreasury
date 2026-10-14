@@ -4,6 +4,12 @@ export interface PluggyItemResponse {
   itemId: string;
   connectorName: string | null;
   linkedAt: string;
+  /** Pluggy's item state, e.g. "UPDATED", "UPDATING", "LOGIN_ERROR", "OUTDATED". Null if unknown. */
+  status: string | null;
+  /** Outcome of the last sync attempt, e.g. "SUCCESS". Null if unknown. */
+  executionStatus: string | null;
+  /** ISO instant Pluggy last finished fetching data; null if it never has. */
+  lastUpdatedAt: string | null;
 }
 
 export interface PluggyConnectTokenResponse {

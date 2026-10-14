@@ -63,7 +63,7 @@ public class PluggyController {
                 details.connector() == null ? null : details.connector().name(),
                 Instant.now()
         ));
-        return PluggyItemResponse.from(saved);
+        return PluggyItemResponse.from(saved, details);
     }
 
     @GetMapping("/item")
@@ -72,6 +72,7 @@ public class PluggyController {
         PluggyItem item = pluggyItems.findByHome(home)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "No Pluggy item linked to this home"));
-        return PluggyItemResponse.from(item);
+        PluggyItemDetails details = pluggyClient.getItem(item.getItemId());
+        return PluggyItemResponse.from(item, details);
     }
 }

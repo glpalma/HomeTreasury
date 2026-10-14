@@ -3,9 +3,22 @@ import { useAuth } from "../context/AuthContext";
 import { useDashboard } from "../hooks/useDashboard";
 import { usePluggyItem, useLinkPluggyItem } from "../hooks/usePluggyItem";
 import { StatusBadge } from "../components/StatusBadge";
-import { formatCurrency, formatDate, formatPercent } from "../lib/format";
+import { formatCurrency, formatDate, formatDateTime, formatPercent } from "../lib/format";
 
 const PERIOD_OPTIONS = [7, 30, 90];
+
+const ITEM_STATUS_STYLES: Record<string, string> = {
+  UPDATED: "bg-emerald-100 text-emerald-800",
+  UPDATING: "bg-slate-100 text-slate-600",
+  LOGIN_ERROR: "bg-red-100 text-red-800",
+  OUTDATED: "bg-amber-100 text-amber-800",
+  WAITING_USER_INPUT: "bg-amber-100 text-amber-800",
+};
+
+function ItemStatusBadge({ status }: { status: string }) {
+  const style = ITEM_STATUS_STYLES[status] ?? "bg-slate-100 text-slate-600";
+  return <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${style}`}>{status}</span>;
+}
 
 function dashboardErrorMessage(error: unknown): string {
   const status = (error as any)?.response?.status;
@@ -183,10 +196,19 @@ export function Dashboard() {
         <h2 className="mb-2 text-sm font-medium text-slate-500">Bank connection</h2>
         {pluggyItem.isLoading && <p className="text-sm text-slate-500">Checking connection…</p>}
         {!pluggyItem.isLoading && pluggyItem.data && (
-          <p className="text-sm text-slate-700">
-            Connected to <span className="font-medium">{pluggyItem.data.connectorName ?? "your bank"}</span> since{" "}
-            {formatDate(pluggyItem.data.linkedAt)}.
-          </p>
+          <div className="space-y-2">
+            <p className="text-sm text-slate-700">
+              Connected to <span className="font-medium">{pluggyItem.data.connectorName ?? "your bank"}</span> since{" "}
+              {formatDate(pluggyItem.data.linkedAt)}.
+            </p>
+            <div className="flex items-center gap-2 text-xs text-slate-500">
+              <span>
+                Last updated:{" "}
+                {pluggyItem.data.lastUpdatedAt ? formatDateTime(pluggyItem.data.lastUpdatedAt) : "never"}
+              </span>
+              {pluggyItem.data.status && <ItemStatusBadge status={pluggyItem.data.status} />}
+            </div>
+          </div>
         )}
         {!pluggyItem.isLoading && !pluggyItem.data && (
           <div className="flex items-center justify-between">
